@@ -1,0 +1,1204 @@
+{
+    "info": {
+        "name": "Craftistan API",
+        "description": "Complete API collection for Craftistan e-commerce backend",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:8080",
+            "type": "string"
+        },
+        {
+            "key": "accessToken",
+            "value": "",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "Authentication",
+            "item": [
+                {
+                    "name": "Register Buyer",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Test Buyer\",\n  \"email\": \"testbuyer@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"BUYER\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/auth/register",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "register"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Register Artisan",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Test Artisan\",\n  \"email\": \"testartisan@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"ARTISAN\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/auth/register",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "register"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Login (Buyer)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "var jsonData = pm.response.json();",
+                                    "if (jsonData.accessToken) {",
+                                    "    pm.collectionVariables.set('accessToken', jsonData.accessToken);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"buyer@example.com\",\n  \"password\": \"password123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/auth/login",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "login"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Login (Artisan)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "var jsonData = pm.response.json();",
+                                    "if (jsonData.accessToken) {",
+                                    "    pm.collectionVariables.set('accessToken', jsonData.accessToken);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"artisan@example.com\",\n  \"password\": \"password123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/auth/login",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "login"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Current User",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/auth/me",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "me"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Products (Public)",
+            "item": [
+                {
+                    "name": "Get All Products",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/api/products",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "products"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Products with Pagination",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/api/products?page=0&size=10&sort=createdAt,desc",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "products"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "size",
+                                    "value": "10"
+                                },
+                                {
+                                    "key": "sort",
+                                    "value": "createdAt,desc"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Search Products",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/api/products?search=silk",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "products"
+                            ],
+                            "query": [
+                                {
+                                    "key": "search",
+                                    "value": "silk"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Filter by Category",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/api/products?category=jewelry",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "products"
+                            ],
+                            "query": [
+                                {
+                                    "key": "category",
+                                    "value": "jewelry"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Filter by Price Range",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/api/products?minPrice=5000&maxPrice=20000",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "products"
+                            ],
+                            "query": [
+                                {
+                                    "key": "minPrice",
+                                    "value": "5000"
+                                },
+                                {
+                                    "key": "maxPrice",
+                                    "value": "20000"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Product by ID",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/api/products/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "products",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Products by Category",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/api/products/category/textiles",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "products",
+                                "category",
+                                "textiles"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Categories",
+            "item": [
+                {
+                    "name": "Get All Categories",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/api/categories",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "categories"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Profile (Authenticated)",
+            "item": [
+                {
+                    "name": "Get Profile",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/profile",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "profile"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Profile",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Updated Name\",\n  \"phone\": \"03001234567\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/profile",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "profile"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Change Password",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"currentPassword\": \"password123\",\n  \"newPassword\": \"newpassword123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/profile/password",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "profile",
+                                "password"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Addresses (Authenticated)",
+            "item": [
+                {
+                    "name": "Get All Addresses",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/addresses",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "addresses"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Create Address",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"label\": \"Home\",\n  \"fullName\": \"Test User\",\n  \"phone\": \"03001234567\",\n  \"address\": \"123 Main Street, Block A\",\n  \"city\": \"Lahore\",\n  \"postalCode\": \"54000\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/addresses",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "addresses"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Address",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"label\": \"Office\",\n  \"fullName\": \"Test User\",\n  \"phone\": \"03009876543\",\n  \"address\": \"456 Business Avenue\",\n  \"city\": \"Karachi\",\n  \"postalCode\": \"75000\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/addresses/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "addresses",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Set Default Address",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/addresses/1/default",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "addresses",
+                                "1",
+                                "default"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Address",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/addresses/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "addresses",
+                                "1"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Wishlist (Authenticated)",
+            "item": [
+                {
+                    "name": "Get Wishlist",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/wishlist",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "wishlist"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Add to Wishlist",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/wishlist/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "wishlist",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Check if in Wishlist",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/wishlist/check/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "wishlist",
+                                "check",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Remove from Wishlist",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/wishlist/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "wishlist",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Clear Wishlist",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/wishlist",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "wishlist"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Orders (Authenticated)",
+            "item": [
+                {
+                    "name": "Create Order",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"items\": [\n    {\n      \"productId\": 1,\n      \"quantity\": 2\n    }\n  ],\n  \"shippingAddress\": {\n    \"fullName\": \"Test User\",\n    \"phone\": \"03001234567\",\n    \"address\": \"123 Main Street\",\n    \"city\": \"Lahore\",\n    \"postalCode\": \"54000\"\n  },\n  \"paymentMethod\": \"COD\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/orders",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "orders"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get My Orders",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/orders",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "orders"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Order by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/orders/ORD-2026-0001",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "orders",
+                                "ORD-2026-0001"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Cancel Order",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/orders/ORD-2026-0001/cancel",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "orders",
+                                "ORD-2026-0001",
+                                "cancel"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Reviews",
+            "item": [
+                {
+                    "name": "Get Product Reviews (Public)",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/api/products/1/reviews",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "products",
+                                "1",
+                                "reviews"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Add Review",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"rating\": 5,\n  \"comment\": \"Excellent quality! Highly recommended.\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/products/1/reviews",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "products",
+                                "1",
+                                "reviews"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Review",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"rating\": 4,\n  \"comment\": \"Updated review - great product!\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/reviews/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "reviews",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Mark Review Helpful",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/reviews/1/helpful",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "reviews",
+                                "1",
+                                "helpful"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Review",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/reviews/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "reviews",
+                                "1"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Artisan (ARTISAN Role Only)",
+            "item": [
+                {
+                    "name": "Get Dashboard Stats",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/artisan/dashboard",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "artisan",
+                                "dashboard"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get My Products",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/artisan/products",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "artisan",
+                                "products"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Create Product",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Handmade Pottery Vase\",\n  \"price\": 5500,\n  \"description\": \"Beautiful handcrafted pottery vase from Multan\",\n  \"category\": \"home-decor\",\n  \"style\": \"classic\",\n  \"images\": [\"https://example.com/image.jpg\"],\n  \"stock\": 10\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/artisan/products",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "artisan",
+                                "products"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Product",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Handmade Pottery Vase - Large\",\n  \"price\": 6500,\n  \"description\": \"Updated description\",\n  \"category\": \"home-decor\",\n  \"style\": \"modern\",\n  \"stock\": 8\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/artisan/products/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "artisan",
+                                "products",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Product",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/artisan/products/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "artisan",
+                                "products",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Artisan Orders",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/artisan/orders",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "artisan",
+                                "orders"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Order Status",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/artisan/orders/ORD-2026-0001/status?status=PROCESSING",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "artisan",
+                                "orders",
+                                "ORD-2026-0001",
+                                "status"
+                            ],
+                            "query": [
+                                {
+                                    "key": "status",
+                                    "value": "PROCESSING"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "File Upload",
+            "item": [
+                {
+                    "name": "Upload Single Image",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "file",
+                                    "type": "file",
+                                    "src": ""
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/upload/image",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "upload",
+                                "image"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Upload Multiple Images",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "files",
+                                    "type": "file",
+                                    "src": ""
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/upload/images",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "upload",
+                                "images"
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
