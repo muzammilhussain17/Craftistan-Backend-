@@ -13,7 +13,7 @@ import java.util.Optional;
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
-    Page<Review> findByProductIdOrderByCreatedAtDesc(Long productId, Pageable pageable);
+    Page<Review> findByProductIdAndIsHiddenFalseOrderByCreatedAtDesc(Long productId, Pageable pageable);
 
     Optional<Review> findByProductIdAndUserId(Long productId, String userId);
 

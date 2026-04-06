@@ -1,0 +1,29 @@
+# Build output
+target/
+
+# Uploads (mounted as volume)
+uploads/
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+
+# Git
+.git/
+.gitignore
+
+# Docker & env
+.env
+docker-compose.yml
+Dockerfile
+
+# Documentation
+docs/
+*.md
+
+# OS files
+Thumbs.db
+.DS_Store

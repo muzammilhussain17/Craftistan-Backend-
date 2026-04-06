@@ -1,0 +1,25 @@
+flowchart TD
+    %% Entities
+    Buyer([Buyer])
+    Artisan([Artisan])
+    System([Craftistan Backend])
+    Gemini[(Google Gemini AI)]
+    
+    %% Core Flow
+    Artisan -->|1. Creates Product| System
+    System -->|2. Background Translation| Gemini
+    Gemini -.->|3. Translated Content| System
+    
+    Buyer -->|4. Browses Catalog| System
+    Buyer -->|5. Adds to Wishlist/Cart| System
+    Buyer -->|6. Places Order| System
+    
+    System -->|7. Deducts Stock & Saves Order| System
+    System -->|8. Order Notification| Artisan
+    
+    Artisan -->|9. Fulfills & Ships Order| System
+    Buyer -->|10. Leaves Verified Review| System
+
+    %% AI Support
+    Buyer -->|Queries| Chatbot[AI Chat Assistant]
+    Chatbot -->|Converses| Gemini

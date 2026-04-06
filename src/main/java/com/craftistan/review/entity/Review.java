@@ -38,4 +38,11 @@ public class Review extends BaseEntity {
 
     @Builder.Default
     private Boolean verified = false; // Verified purchase
+
+    // Admin moderation
+    @Builder.Default
+    private Boolean isHidden = false; // Admin hid this review
+
+    @Builder.Default
+    private Boolean isFlagged = false; // Flagged for review by user/admin
 }

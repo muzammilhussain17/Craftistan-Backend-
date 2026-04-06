@@ -2,6 +2,7 @@ package com.craftistan.product.entity;
 
 import com.craftistan.common.entity.BaseEntity;
 import jakarta.persistence.*;
+import com.craftistan.product.entity.ApprovalStatus;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -59,6 +60,21 @@ public class Product extends BaseEntity {
     @Column(name = "is_active")
     @Builder.Default
     private Boolean isActive = true;
+
+    // Admin moderation — products start as PENDING, only APPROVED appear publicly
+    @Enumerated(EnumType.STRING)
+    @Column(name = "approval_status")
+    @Builder.Default
+    private ApprovalStatus approvalStatus = ApprovalStatus.PENDING;
+
+    // Reason shown to artisan when their product is rejected
+    @Column(name = "admin_notes", length = 1000)
+    private String adminNotes;
+
+    // Featured on homepage showcase
+    @Column(name = "is_featured")
+    @Builder.Default
+    private Boolean isFeatured = false;
 
     // Language of original content (e.g., "en", "ur")
     @Column(name = "original_language")

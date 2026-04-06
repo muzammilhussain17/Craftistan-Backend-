@@ -1,0 +1,21 @@
+# Production Profile
+spring:
+  # PostgreSQL Database
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:craftistan}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:aziz890}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+
+  flyway:
+    enabled: true
+
+# Logging
+logging:
+  level:
+    com.craftistan: INFO
+    org.springframework: WARN

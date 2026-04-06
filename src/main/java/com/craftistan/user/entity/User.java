@@ -48,6 +48,17 @@ public class User implements UserDetails {
     @Builder.Default
     private boolean enabled = true;
 
+    // Admin-controlled fields
+    @Enumerated(EnumType.STRING)
+    @Column(name = "account_status")
+    @Builder.Default
+    private AccountStatus accountStatus = AccountStatus.ACTIVE;
+
+    // Artisan verification — must be true before artisan products appear publicly
+    @Column(name = "is_verified")
+    @Builder.Default
+    private Boolean isVerified = false;
+
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

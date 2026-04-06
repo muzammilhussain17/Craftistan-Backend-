@@ -22,7 +22,7 @@ public class ReviewService {
     private final ProductRepository productRepository;
 
     public Page<ReviewDto> getProductReviews(Long productId, Pageable pageable) {
-        return reviewRepository.findByProductIdOrderByCreatedAtDesc(productId, pageable)
+        return reviewRepository.findByProductIdAndIsHiddenFalseOrderByCreatedAtDesc(productId, pageable)
                 .map(this::toDto);
     }
 

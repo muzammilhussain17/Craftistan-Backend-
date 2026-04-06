@@ -3,6 +3,7 @@ package com.craftistan.product.service;
 import com.craftistan.common.exception.ResourceNotFoundException;
 import com.craftistan.product.dto.CreateProductRequest;
 import com.craftistan.product.dto.ProductDto;
+import com.craftistan.product.entity.ApprovalStatus;
 import com.craftistan.product.entity.Product;
 import com.craftistan.product.repository.ProductRepository;
 import com.craftistan.translation.dto.TranslatedContent;
@@ -25,11 +26,11 @@ public class ProductService {
     private final TranslationService translationService;
 
     // ============================================
-    // GET methods with language support
+    // PUBLIC GET methods - APPROVED products only
     // ============================================
 
     public Page<ProductDto> getAllProducts(Pageable pageable, String language) {
-        return productRepository.findByIsActiveTrue(pageable)
+        return productRepository.findByIsActiveTrueAndApprovalStatus(ApprovalStatus.APPROVED, pageable)
                 .map(p -> toDto(p, language));
     }
 
@@ -38,7 +39,8 @@ public class ProductService {
     }
 
     public Page<ProductDto> getProductsByCategory(String category, Pageable pageable, String language) {
-        return productRepository.findByCategoryAndIsActiveTrue(category, pageable)
+        return productRepository.findByCategoryAndIsActiveTrueAndApprovalStatus(
+                category, ApprovalStatus.APPROVED, pageable)
                 .map(p -> toDto(p, language));
     }
 

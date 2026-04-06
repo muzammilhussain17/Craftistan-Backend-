@@ -1,5 +1,6 @@
 package com.craftistan.config;
 
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -30,9 +31,11 @@ import java.util.List;
 @EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
+
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
+//    private final JwtAuthFilter jwtAuthFilter;
     private final UserDetailsService userDetailsService;
 
     @Value("${app.cors.allowed-origins}")
@@ -60,6 +63,9 @@ public class SecurityConfig {
 
                         // Chatbot endpoints (public for all users including guests)
                         .requestMatchers("/api/chat/**").permitAll()
+
+                        // Admin-only endpoints
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
                         // Artisan-only endpoints
                         .requestMatchers("/api/artisan/**").hasRole("ARTISAN")

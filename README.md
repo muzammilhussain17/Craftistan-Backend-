@@ -35,6 +35,61 @@ export JWT_SECRET=your-256-bit-secret-key
 mvn spring-boot:run -Dspring-boot.run.profiles=prod
 ```
 
+## Docker Deployment
+
+### Prerequisites
+
+- [Docker](https://docs.docker.com/get-docker/) & [Docker Compose](https://docs.docker.com/compose/install/) installed
+
+### 1. Configure Environment Variables
+
+```bash
+# Copy the example env file
+cp .env.example .env
+
+# Edit .env and fill in your values
+```
+
+Required variables in `.env`:
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `DB_NAME` | PostgreSQL database name | `craftistan` |
+| `DB_USERNAME` | PostgreSQL username | `postgres` |
+| `DB_PASSWORD` | PostgreSQL password | `your_secure_password` |
+| `JWT_SECRET` | JWT signing key (min 256-bit) | `your-256-bit-secret` |
+| `GEMINI_API_KEY` | Google Gemini API key | `AIza...` |
+| `BREVO_SMTP_USER` | Brevo SMTP username | `your_smtp_user` |
+| `BREVO_SMTP_KEY` | Brevo SMTP key | `your_smtp_key` |
+| `CORS_ALLOWED_ORIGINS` | Frontend URL(s), comma-separated | `https://your-frontend.com` |
+| `APP_PORT` | Host port to expose (default `8080`) | `8080` |
+
+### 2. Build & Run
+
+```bash
+# Build and start all services (PostgreSQL + App)
+docker compose up --build -d
+
+# View logs
+docker compose logs -f app
+
+# Stop all services
+docker compose down
+
+# Stop and remove volumes (⚠️ deletes database & uploads)
+docker compose down -v
+```
+
+### 3. Verify
+
+```bash
+# Health check
+curl http://localhost:8080/actuator/health
+
+# Swagger UI
+# Open http://localhost:8080/swagger-ui.html
+```
+
 ## API Endpoints
 
 ### Base URL: `http://localhost:8080`

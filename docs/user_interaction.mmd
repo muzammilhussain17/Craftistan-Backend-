@@ -1,0 +1,29 @@
+sequenceDiagram
+    actor Buyer
+    actor Artisan
+    participant API as Craftistan Spring API
+    participant DB as PostgreSQL Database
+    participant Gemini as Google Gemini API
+
+    %% Artisan Interaction
+    Artisan->>API: 1. Login & Get JWT Token
+    API-->>Artisan: Token
+    Artisan->>API: 2. Create Handicraft Product (Auth required)
+    API->>DB: Save Base Product Info
+    API-)Gemini: 3. Async Translate (Urdu, Punjabi, etc.)
+    Gemini--)API: Return Translations
+    API->>DB: Store Translated Data
+    
+    %% Buyer Interaction
+    Buyer->>API: 4. Browse Products & Ask Chatbot
+    API-->>Buyer: Localized Product Catalog
+    Buyer->>API: 5. Checkout & Place Order
+    API->>DB: 6. Deduct Stock & Create Order Record
+    API-->>Artisan: 7. Notify Artisan of New Order
+    API-->>Buyer: 8. Order Confirmation
+    
+    %% Fulfillment & Review
+    Artisan->>API: 9. Update Order Status to 'SHIPPED'
+    API->>DB: Update Status
+    Buyer->>API: 10. Write 'Verified Purchase' Review
+    API->>DB: Validate Purchase & Save Review
