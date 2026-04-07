@@ -1,6 +1,7 @@
 package com.craftistan.review.service;
 
 import com.craftistan.common.exception.ResourceNotFoundException;
+import com.craftistan.notification.service.EmailService;
 import com.craftistan.product.entity.Product;
 import com.craftistan.product.repository.ProductRepository;
 import com.craftistan.review.dto.CreateReviewRequest;
@@ -8,6 +9,7 @@ import com.craftistan.review.dto.ReviewDto;
 import com.craftistan.review.entity.Review;
 import com.craftistan.review.repository.ReviewRepository;
 import com.craftistan.user.entity.User;
+import com.craftistan.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +22,8 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final ProductRepository productRepository;
+    private final UserRepository userRepository;
+    private final EmailService emailService;
 
     public Page<ReviewDto> getProductReviews(Long productId, Pageable pageable) {
         return reviewRepository.findByProductIdAndIsHiddenFalseOrderByCreatedAtDesc(productId, pageable)
@@ -48,6 +52,13 @@ public class ReviewService {
                 .build();
 
         Review saved = reviewRepository.save(review);
+
+        // Notify the artisan about the new review
+        userRepository.findById(product.getArtisanId()).ifPresent(artisan ->
+                emailService.sendNewReviewEmail(
+                        artisan.getEmail(), artisan.getName(),
+                        product.getName(), user.getName(),
+                        request.getRating(), request.getComment()));
 
         // Update product rating
         updateProductRating(productId);

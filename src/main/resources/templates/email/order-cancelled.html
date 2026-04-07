@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Order Cancelled</title>
+  <style>
+    body { margin:0; padding:0; background:#f5f0eb; font-family:'Segoe UI',Arial,sans-serif; }
+    .wrapper { max-width:600px; margin:40px auto; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 4px 20px rgba(0,0,0,.08); }
+    .header { background:linear-gradient(135deg,#c62828,#e53935); padding:36px 32px; text-align:center; }
+    .header h1 { margin:0; color:#fff; font-size:24px; }
+    .header p  { margin:6px 0 0; color:#ffcdd2; font-size:13px; }
+    .body { padding:36px 32px; }
+    .body h2 { color:#3d2b1f; margin-top:0; }
+    .body p  { color:#555; line-height:1.7; font-size:15px; }
+    .order-id { background:#fdf6ee; border-left:4px solid #c62828; padding:12px 16px; border-radius:4px; font-weight:700; color:#c62828; font-size:18px; margin:20px 0; }
+    .cta { display:block; width:fit-content; margin:28px auto; padding:14px 36px; background:#8B4513; color:#fff; text-decoration:none; border-radius:8px; font-weight:600; }
+    .footer { background:#fdf6ee; padding:20px 32px; text-align:center; border-top:1px solid #ede0d0; }
+    .footer p { margin:0; font-size:12px; color:#999; }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="header">
+    <h1>❌ Order Cancelled</h1>
+    <p>Your order has been cancelled</p>
+  </div>
+  <div class="body">
+    <h2>Hi <span th:text="${name}">User</span>,</h2>
+
+    <!-- Message for buyer -->
+    <div th:unless="${isArtisan}">
+      <p>Your order has been successfully cancelled. We're sorry to see it go!</p>
+      <div class="order-id" th:text="${orderId}">ORD-2025-0001</div>
+      <p>If you have any questions about your cancellation or would like to place a new order, we're here to help.</p>
+      <a class="cta" href="https://craftistan.pk/products">Continue Shopping →</a>
+    </div>
+
+    <!-- Message for artisan -->
+    <div th:if="${isArtisan}">
+      <p>A buyer has cancelled the following order. No action is required from your end.</p>
+      <div class="order-id" th:text="${orderId}">ORD-2025-0001</div>
+      <p>If you had already started preparing this order, please reach out to our support team.</p>
+      <a class="cta" href="https://craftistan.pk/artisan/orders">View My Orders →</a>
+    </div>
+  </div>
+  <div class="footer">
+    <p>© 2025 Craftistan · <a href="mailto:support@craftistan.pk" style="color:#8B4513;">support@craftistan.pk</a></p>
+  </div>
+</div>
+</body>
+</html>

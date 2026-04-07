@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>New Review on Your Product</title>
+  <style>
+    body { margin:0; padding:0; background:#f5f0eb; font-family:'Segoe UI',Arial,sans-serif; }
+    .wrapper { max-width:600px; margin:40px auto; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 4px 20px rgba(0,0,0,.08); }
+    .header { background:linear-gradient(135deg,#6a1b9a,#8e24aa); padding:36px 32px; text-align:center; }
+    .header h1 { margin:0; color:#fff; font-size:24px; }
+    .header p  { margin:6px 0 0; color:#e1bee7; font-size:13px; }
+    .body { padding:36px 32px; }
+    .body h2 { color:#3d2b1f; margin-top:0; }
+    .body p  { color:#555; line-height:1.7; font-size:15px; }
+    .review-card { background:#fdf6ee; border-radius:12px; padding:24px; margin:20px 0; border-left:4px solid #8B4513; }
+    .review-card .product { font-size:13px; color:#888; margin:0 0 6px; }
+    .review-card .reviewer { font-weight:700; color:#3d2b1f; font-size:16px; margin:0 0 8px; }
+    .stars { color:#f9a825; font-size:22px; letter-spacing:2px; margin:6px 0; }
+    .comment { font-style:italic; color:#555; margin:10px 0 0; font-size:14px; line-height:1.6; }
+    .cta { display:block; width:fit-content; margin:28px auto; padding:14px 36px; background:#8B4513; color:#fff; text-decoration:none; border-radius:8px; font-weight:600; }
+    .footer { background:#fdf6ee; padding:20px 32px; text-align:center; border-top:1px solid #ede0d0; }
+    .footer p { margin:0; font-size:12px; color:#999; }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="header">
+    <h1>⭐ New Review Received!</h1>
+    <p>A customer has left feedback on your product</p>
+  </div>
+  <div class="body">
+    <h2>Hi <span th:text="${artisanName}">Artisan</span>,</h2>
+    <p>You have a new review on one of your products!</p>
+
+    <div class="review-card">
+      <p class="product">Review for: <strong th:text="${productName}">Product</strong></p>
+      <p class="reviewer" th:text="${reviewerName}">Customer</p>
+      <div class="stars">
+        <th:block th:each="i : ${#numbers.sequence(1, rating)}">⭐</th:block>
+        <span style="font-size:14px;color:#888;font-style:normal;"> (<span th:text="${rating}">5</span>/5)</span>
+      </div>
+      <p class="comment" th:if="${comment != null and !#strings.isEmpty(comment)}" th:text="${'&quot;' + comment + '&quot;'}">"Great product!"</p>
+      <p class="comment" th:unless="${comment != null and !#strings.isEmpty(comment)}" style="color:#aaa;">No written comment.</p>
+    </div>
+
+    <p>Consistently great reviews help you attract more customers and grow your business on Craftistan.</p>
+    <a class="cta" href="https://craftistan.pk/artisan/dashboard">View Dashboard →</a>
+  </div>
+  <div class="footer">
+    <p>© 2025 Craftistan · <a href="mailto:support@craftistan.pk" style="color:#8B4513;">support@craftistan.pk</a></p>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Your Report Has Been Updated</title>
+  <style>
+    body { margin:0; padding:0; background:#f5f0eb; font-family:'Segoe UI',Arial,sans-serif; }
+    .wrapper { max-width:600px; margin:40px auto; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 4px 20px rgba(0,0,0,.08); }
+    .header { background:linear-gradient(135deg,#00695c,#00897b); padding:36px 32px; text-align:center; }
+    .header h1 { margin:0; color:#fff; font-size:24px; }
+    .header p  { margin:6px 0 0; color:#b2dfdb; font-size:13px; }
+    .body { padding:36px 32px; }
+    .body h2 { color:#3d2b1f; margin-top:0; }
+    .body p  { color:#555; line-height:1.7; font-size:15px; }
+    .status-pill { display:inline-block; padding:6px 18px; border-radius:20px; font-weight:700; font-size:14px; margin:16px 0; background:#e0f2f1; color:#00695c; }
+    .resolution-box { background:#f9fbe7; border:1px solid #dce775; border-radius:8px; padding:16px 20px; margin:20px 0; font-size:14px; color:#558b2f; }
+    .cta { display:block; width:fit-content; margin:28px auto; padding:14px 36px; background:#8B4513; color:#fff; text-decoration:none; border-radius:8px; font-weight:600; }
+    .footer { background:#fdf6ee; padding:20px 32px; text-align:center; border-top:1px solid #ede0d0; }
+    .footer p { margin:0; font-size:12px; color:#999; }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="header">
+    <h1>📋 Report Update</h1>
+    <p>Your report has been reviewed by our team</p>
+  </div>
+  <div class="body">
+    <h2>Hi <span th:text="${name}">User</span>,</h2>
+    <p>We wanted to let you know that your report has been updated. Our moderation team has reviewed it and taken appropriate action.</p>
+
+    <p>New Status: <span class="status-pill" th:text="${status}">RESOLVED</span></p>
+
+    <div class="resolution-box" th:if="${resolutionNote != null and !#strings.isEmpty(resolutionNote)}">
+      <strong>📝 Resolution Note:</strong><br/>
+      <span th:text="${resolutionNote}"></span>
+    </div>
+
+    <p>Thank you for helping us maintain a safe and trustworthy marketplace for everyone on Craftistan.</p>
+    <a class="cta" href="https://craftistan.pk/reports/my">View My Reports →</a>
+  </div>
+  <div class="footer">
+    <p>© 2025 Craftistan · <a href="mailto:support@craftistan.pk" style="color:#8B4513;">support@craftistan.pk</a></p>
+  </div>
+</div>
+</body>
+</html>

@@ -1,6 +1,7 @@
 package com.craftistan.admin.service;
 
 import com.craftistan.admin.dto.*;
+import com.craftistan.notification.service.EmailService;
 import com.craftistan.order.repository.OrderRepository;
 import com.craftistan.product.entity.ApprovalStatus;
 import com.craftistan.product.entity.Product;
@@ -32,6 +33,7 @@ public class AdminService {
     private final OrderRepository orderRepository;
     private final ReviewRepository reviewRepository;
     private final ReportRepository reportRepository;
+    private final EmailService emailService;
 
     // ==============================
     // Dashboard Stats
@@ -107,7 +109,16 @@ public class AdminService {
         }
         artisan.setIsVerified(approved);
         log.info("Admin {} artisan {}: {}", approved ? "approved" : "rejected", id, notes);
-        return userRepository.save(artisan);
+        User saved = userRepository.save(artisan);
+
+        // Send verification result email
+        if (approved) {
+            emailService.sendArtisanVerifiedEmail(saved.getEmail(), saved.getName());
+        } else {
+            emailService.sendArtisanRejectedEmail(saved.getEmail(), saved.getName(), notes);
+        }
+
+        return saved;
     }
 
     // ==============================
@@ -199,6 +210,16 @@ public class AdminService {
             report.setResolvedAt(LocalDateTime.now());
         }
         log.info("Admin updated report {} to {}", id, newStatus);
-        return reportRepository.save(report);
+        Report saved = reportRepository.save(report);
+
+        // Email the reporter when the report is actioned
+        if (newStatus == ReportStatus.RESOLVED || newStatus == ReportStatus.DISMISSED) {
+            userRepository.findById(saved.getReporterId()).ifPresent(reporter ->
+                    emailService.sendReportResolvedEmail(
+                            reporter.getEmail(), reporter.getName(),
+                            newStatus.name(), resolutionNote));
+        }
+
+        return saved;
     }
 }

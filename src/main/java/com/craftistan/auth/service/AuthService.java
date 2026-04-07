@@ -4,6 +4,7 @@ import com.craftistan.auth.dto.AuthResponse;
 import com.craftistan.auth.dto.LoginRequest;
 import com.craftistan.auth.dto.RegisterRequest;
 import com.craftistan.config.JwtUtils;
+import com.craftistan.notification.service.EmailService;
 import com.craftistan.user.entity.Role;
 import com.craftistan.user.entity.User;
 import com.craftistan.user.repository.UserRepository;
@@ -25,6 +26,7 @@ public class AuthService {
         private final PasswordEncoder passwordEncoder;
         private final JwtUtils jwtUtils;
         private final AuthenticationManager authenticationManager;
+        private final EmailService emailService;
 
         public AuthResponse register(RegisterRequest request) {
                 try {
@@ -45,6 +47,9 @@ public class AuthService {
                                         .build();
 
                         User savedUser = userRepository.save(user);
+
+                        // Send welcome email asynchronously
+                        emailService.sendWelcomeEmail(savedUser.getEmail(), savedUser.getName());
 
                         return AuthResponse.builder()
                                         .success(true)

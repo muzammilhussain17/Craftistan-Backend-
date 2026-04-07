@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>New Order Received</title>
+  <style>
+    body { margin:0; padding:0; background:#f5f0eb; font-family:'Segoe UI',Arial,sans-serif; }
+    .wrapper { max-width:600px; margin:40px auto; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 4px 20px rgba(0,0,0,.08); }
+    .header { background:linear-gradient(135deg,#8B4513,#c0622a); padding:36px 32px; text-align:center; }
+    .header h1 { margin:0; color:#fff; font-size:24px; }
+    .header p  { margin:6px 0 0; color:#f5deb3; font-size:13px; }
+    .body { padding:36px 32px; }
+    .body h2 { color:#3d2b1f; margin-top:0; }
+    .body p  { color:#555; line-height:1.7; font-size:15px; }
+    .order-id { background:#fdf6ee; border-left:4px solid #8B4513; padding:12px 16px; border-radius:4px; font-weight:700; color:#8B4513; font-size:18px; margin:20px 0; }
+    table { width:100%; border-collapse:collapse; margin:20px 0; }
+    th { background:#fdf6ee; color:#8B4513; font-size:13px; padding:10px 12px; text-align:left; }
+    td { padding:10px 12px; border-bottom:1px solid #f0e8dc; font-size:14px; color:#444; }
+    .total-row td { font-weight:700; color:#3d2b1f; font-size:15px; background:#fdf6ee; }
+    .alert { background:#fff8e1; border:1px solid #ffe082; border-radius:8px; padding:14px 18px; margin:20px 0; font-size:14px; color:#795548; }
+    .cta { display:block; width:fit-content; margin:28px auto; padding:14px 36px; background:#8B4513; color:#fff; text-decoration:none; border-radius:8px; font-weight:600; }
+    .footer { background:#fdf6ee; padding:20px 32px; text-align:center; border-top:1px solid #ede0d0; }
+    .footer p { margin:0; font-size:12px; color:#999; }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="header">
+    <h1>🛒 New Order Received!</h1>
+    <p>A customer has placed an order for your products</p>
+  </div>
+  <div class="body">
+    <h2>Hello <span th:text="${artisanName}">Artisan</span>,</h2>
+    <p>Great news! You've received a new order. Please prepare the items and update the status from your dashboard.</p>
+
+    <div class="order-id" th:text="${orderId}">ORD-2025-0001</div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Qty</th>
+          <th>Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="item : ${items}">
+          <td th:text="${item.productName()}">Product</td>
+          <td th:text="${item.quantity()}">1</td>
+          <td>Rs. <span th:text="${item.price()}">0</span></td>
+        </tr>
+        <tr class="total-row">
+          <td colspan="2">Total</td>
+          <td>Rs. <span th:text="${total}">0</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="alert">
+      ⏰ <strong>Action Required:</strong> Please update the order status to "Processing" once you start preparing the items.
+    </div>
+
+    <a class="cta" href="https://craftistan.pk/artisan/orders">Manage Orders →</a>
+  </div>
+  <div class="footer">
+    <p>© 2025 Craftistan · <a href="mailto:support@craftistan.pk" style="color:#8B4513;">support@craftistan.pk</a></p>
+  </div>
+</div>
+</body>
+</html>

@@ -1,6 +1,7 @@
 package com.craftistan.order.service;
 
 import com.craftistan.common.exception.ResourceNotFoundException;
+import com.craftistan.notification.service.EmailService;
 import com.craftistan.order.dto.CreateOrderRequest;
 import com.craftistan.order.dto.OrderDto;
 import com.craftistan.order.entity.Order;
@@ -10,7 +11,9 @@ import com.craftistan.order.repository.OrderRepository;
 import com.craftistan.product.entity.Product;
 import com.craftistan.product.repository.ProductRepository;
 import com.craftistan.user.entity.User;
+import com.craftistan.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,14 +21,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OrderService {
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final UserRepository userRepository;
+    private final EmailService emailService;
 
     private static final BigDecimal FREE_SHIPPING_THRESHOLD = new BigDecimal("5000");
     private static final BigDecimal SHIPPING_COST = new BigDecimal("200");
@@ -76,6 +83,35 @@ public class OrderService {
         order.setTotal(subtotal.add(shippingCost));
 
         Order saved = orderRepository.save(order);
+
+        // --- Emails ---
+        // Build item list for email templates
+        List<EmailService.OrderItemData> emailItems = new ArrayList<>();
+        for (OrderItem oi : saved.getItems()) {
+            emailItems.add(new EmailService.OrderItemData(oi.getProductName(), oi.getQuantity(), oi.getPrice()));
+        }
+
+        // 1. Buyer confirmation
+        emailService.sendOrderConfirmationEmail(
+                user.getEmail(), user.getName(), saved.getId(),
+                saved.getTotal(), saved.getPaymentMethod().toString(), emailItems);
+
+        // 2. Notify each unique artisan whose products are in this order
+        saved.getItems().stream()
+                .map(OrderItem::getArtisanId)
+                .distinct()
+                .forEach(artisanId -> userRepository.findById(artisanId).ifPresent(artisan -> {
+                    List<EmailService.OrderItemData> artisanItems = saved.getItems().stream()
+                            .filter(oi -> artisanId.equals(oi.getArtisanId()))
+                            .map(oi -> new EmailService.OrderItemData(oi.getProductName(), oi.getQuantity(), oi.getPrice()))
+                            .toList();
+                    BigDecimal artisanTotal = artisanItems.stream()
+                            .map(i -> i.price().multiply(BigDecimal.valueOf(i.quantity())))
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+                    emailService.sendArtisanNewOrderEmail(
+                            artisan.getEmail(), artisan.getName(), saved.getId(), artisanItems, artisanTotal);
+                }));
+
         return toDto(saved);
     }
 
@@ -113,6 +149,17 @@ public class OrderService {
 
         order.setStatus(OrderStatus.CANCELLED);
         Order saved = orderRepository.save(order);
+
+        // Notify buyer
+        emailService.sendOrderCancelledEmail(user.getEmail(), user.getName(), orderId, false);
+
+        // Notify each artisan whose items are in the order
+        saved.getItems().stream()
+                .map(OrderItem::getArtisanId)
+                .distinct()
+                .forEach(artisanId -> userRepository.findById(artisanId).ifPresent(artisan ->
+                        emailService.sendOrderCancelledEmail(artisan.getEmail(), artisan.getName(), orderId, true)));
+
         return toDto(saved);
     }
 
@@ -128,6 +175,12 @@ public class OrderService {
 
         order.setStatus(status);
         Order saved = orderRepository.save(order);
+
+        // Notify buyer of status change
+        userRepository.findById(saved.getUserId()).ifPresent(buyer ->
+                emailService.sendOrderStatusUpdateEmail(
+                        buyer.getEmail(), buyer.getName(), orderId, status.name()));
+
         return toDto(saved);
     }
 
