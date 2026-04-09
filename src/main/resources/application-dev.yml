@@ -18,8 +18,33 @@ spring:
   flyway:
     enabled: false
 
+  # Mail — Brevo SMTP (dev credentials)
+  mail:
+    host: smtp-relay.brevo.com
+    port: 465
+    username: .....
+    password: ......
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true
+          connectiontimeout: 10000
+          timeout: 10000
+          writetimeout: 10000
+        debug: true
+
+# App-level config (sender address for email templates)
+app:
+  mail:
+    from: muzammilhussain0a0@gmail.com
+  gemini:
+    api-key: ......
+
 # Logging
 logging:
   level:
     com.craftistan: DEBUG
     org.springframework.web: DEBUG
+    org.springframework.mail: DEBUG

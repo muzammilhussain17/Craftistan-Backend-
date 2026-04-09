@@ -213,7 +213,7 @@ public class AdminService {
         Report saved = reportRepository.save(report);
 
         // Email the reporter when the report is actioned
-        if (newStatus == ReportStatus.RESOLVED || newStatus == ReportStatus.DISMISSED) {
+        if (newStatus == ReportStatus.RESOLVED) {
             userRepository.findById(saved.getReporterId()).ifPresent(reporter ->
                     emailService.sendReportResolvedEmail(
                             reporter.getEmail(), reporter.getName(),

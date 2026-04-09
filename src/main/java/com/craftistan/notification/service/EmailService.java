@@ -15,6 +15,10 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
+import com.craftistan.notification.entity.Notification;
+import com.craftistan.user.repository.UserRepository;
+import com.craftistan.user.entity.User;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -22,8 +26,10 @@ public class EmailService {
 
     private final JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
+    private final NotificationService notificationService;
+    private final UserRepository userRepository;
 
-    @Value("${spring.mail.username:noreply@craftistan.pk}")
+    @Value("${app.mail.from:muzammilhussain0a0@gmail.com}")
     private String fromEmail;
 
     private static final String FROM_NAME = "Craftistan";
@@ -48,9 +54,38 @@ public class EmailService {
 
             mailSender.send(message);
             log.info("Email '{}' sent to {}", subject, to);
+            
+            // Generate in-app notification
+            createInAppNotificationFromEmail(to, subject, templateName);
         } catch (Exception e) {
             log.error("Failed to send email '{}' to {}: {}", subject, to, e.getMessage());
         }
+    }
+
+    private void createInAppNotificationFromEmail(String email, String title, String templateName) {
+        userRepository.findByEmail(email).ifPresent(user -> {
+            String type = switch(templateName) {
+                case "order-confirmation", "artisan-new-order", "order-status-update", "order-cancelled" -> "ORDER";
+                case "new-review" -> "REVIEW";
+                case "welcome", "artisan-verified", "artisan-rejected", "report-resolved" -> "SYSTEM";
+                default -> "SYSTEM";
+            };
+            
+            String message = switch(templateName) {
+                case "order-confirmation" -> "Your order has been confirmed.";
+                case "artisan-new-order" -> "You received a new order!";
+                case "order-status-update" -> "Your order status was updated.";
+                case "order-cancelled" -> "An order was cancelled.";
+                case "new-review" -> "You received a new product review.";
+                case "welcome" -> "Welcome to Craftistan!";
+                case "artisan-verified" -> "Your artisan account is approved!";
+                case "artisan-rejected" -> "Update regarding your artisan application.";
+                case "report-resolved" -> "Your filed report was resolved.";
+                default -> "You have a new notification.";
+            };
+            
+            notificationService.createNotification(user.getId(), type, title, message, null);
+        });
     }
 
     // ─────────────────────────────────────────────────────────────────────────
