@@ -66,4 +66,21 @@ public class ProductController {
         Page<ProductDto> products = productService.getProductsByCategory(category, pageable, lang);
         return ResponseEntity.ok(ApiResponse.success(products));
     }
+
+    @GetMapping("/artisan/{artisanId}")
+    @Operation(summary = "Get products by artisan ID")
+    public ResponseEntity<ApiResponse<Page<ProductDto>>> getArtisanProducts(
+            @PathVariable String artisanId,
+            @Parameter(description = "Language code for translations") @RequestParam(required = false, defaultValue = "en") String lang,
+            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<ProductDto> products = productService.getArtisanProducts(artisanId, pageable, lang);
+        return ResponseEntity.ok(ApiResponse.success(products));
+    }
+
+    @PostMapping("/translate-all")
+    @Operation(summary = "Backfill translations for all non-translated products (Admin/System)")
+    public ResponseEntity<ApiResponse<Void>> translateAll() {
+        productService.triggerAllTranslations();
+        return ResponseEntity.ok(ApiResponse.success(null, "Mass translation backfill triggered in the background."));
+    }
 }

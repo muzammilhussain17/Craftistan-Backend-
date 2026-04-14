@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Service for translating product content using Google Gemini API
@@ -165,19 +167,14 @@ public class TranslationService {
                 JsonNode content = candidates.get(0).path("content").path("parts");
                 if (content.isArray() && content.size() > 0) {
                     String jsonText = content.get(0).path("text").asText();
-
-                    // Clean up potential markdown formatting
-                    jsonText = jsonText.trim();
-                    if (jsonText.startsWith("```json")) {
-                        jsonText = jsonText.substring(7);
+                    // Use Regex to aggressively extract the JSON object in case of markdown wrapping
+                    Matcher matcher = Pattern.compile("\\{.*\\}", Pattern.DOTALL).matcher(jsonText);
+                    if (matcher.find()) {
+                        jsonText = matcher.group(0);
+                    } else {
+                        log.warn("Could not find a JSON object in Gemini response for {}", targetLang);
+                        return null;
                     }
-                    if (jsonText.startsWith("```")) {
-                        jsonText = jsonText.substring(3);
-                    }
-                    if (jsonText.endsWith("```")) {
-                        jsonText = jsonText.substring(0, jsonText.length() - 3);
-                    }
-                    jsonText = jsonText.trim();
 
                     // Parse the JSON response
                     JsonNode translationNode = objectMapper.readTree(jsonText);

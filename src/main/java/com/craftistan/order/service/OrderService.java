@@ -55,10 +55,18 @@ public class OrderService {
                 .shippingPostalCode(request.getShippingAddress().getPostalCode())
                 .build();
 
-        // Add items
+        // Add items and deduct stock
         for (CreateOrderRequest.OrderItemRequest itemRequest : request.getItems()) {
-            Product product = productRepository.findById(itemRequest.getProductId())
+            Product product = productRepository.findByIdWithLock(itemRequest.getProductId())
                     .orElseThrow(() -> new ResourceNotFoundException("Product", "id", itemRequest.getProductId()));
+
+            // Check stock limit
+            if (product.getStock() < itemRequest.getQuantity()) {
+                throw new RuntimeException("Insufficient stock for product: " + product.getName() + ". Only " + product.getStock() + " remaining.");
+            }
+
+            // Deduct stock
+            product.setStock(product.getStock() - itemRequest.getQuantity());
 
             OrderItem item = OrderItem.builder()
                     .productId(product.getId())
@@ -71,6 +79,9 @@ public class OrderService {
 
             order.addItem(item);
             subtotal = subtotal.add(product.getPrice().multiply(BigDecimal.valueOf(itemRequest.getQuantity())));
+            
+            // Save product to commit stock deduction
+            productRepository.save(product);
         }
 
         // Calculate shipping

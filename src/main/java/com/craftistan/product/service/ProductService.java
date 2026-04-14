@@ -184,6 +184,23 @@ public class ProductService {
     }
 
     // ============================================
+    // UTILITY METHODS
+    // ============================================
+    
+    @Transactional
+    public void triggerAllTranslations() {
+        List<Product> products = productRepository.findAll();
+        long count = 0;
+        for (Product product : products) {
+            if (product.getTranslations() == null || product.getTranslations().isEmpty() || product.getTranslations().equals("{}")) {
+                translationService.translateProductAsync(product);
+                count++;
+            }
+        }
+        log.info("Triggered mass translation backfill for {} products", count);
+    }
+
+    // ============================================
     // DTO conversion with translation support
     // ============================================
 
