@@ -16,13 +16,21 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import com.craftistan.user.repository.PasswordResetTokenRepository;
+import com.craftistan.user.entity.PasswordResetToken;
+import com.craftistan.common.exception.ResourceNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
         private final UserRepository userRepository;
+        private final PasswordResetTokenRepository tokenRepository;
         private final PasswordEncoder passwordEncoder;
         private final JwtUtils jwtUtils;
         private final AuthenticationManager authenticationManager;
@@ -62,6 +70,88 @@ public class AuthService {
                                         .message("Registration failed: " + e.getMessage())
                                         .build();
                 }
+        }
+
+        // ─────────────────────────────────────────────────────────────────────────
+        // Forgot Password Flow
+        // ─────────────────────────────────────────────────────────────────────────
+
+        @Transactional
+        public AuthResponse forgotPassword(String email) {
+                Optional<User> userOpt = userRepository.findByEmail(email);
+                if (userOpt.isEmpty()) {
+                        return AuthResponse.builder()
+                                        .success(false)
+                                        .message("No account found with this email address")
+                                        .build();
+                }
+                User user = userOpt.get();
+
+                // Generate 6-digit OTP safely
+                SecureRandom random = new SecureRandom();
+                int num = random.nextInt(1000000);
+                String otp = String.format("%06d", num);
+
+                // Check for existing token and delete
+                tokenRepository.findByEmail(email).ifPresent(tokenRepository::delete);
+
+                // Create new token valid for 2 minutes
+                PasswordResetToken resetToken = PasswordResetToken.builder()
+                                .email(email)
+                                .otp(otp)
+                                .expiryDate(LocalDateTime.now().plusMinutes(2))
+                                .build();
+                
+                tokenRepository.save(resetToken);
+
+                // Trigger Email
+                emailService.sendPasswordResetOtpEmail(user.getEmail(), user.getName(), otp);
+
+                return AuthResponse.builder()
+                                .success(true)
+                                .message("OTP sent to your email successfully")
+                                .build();
+        }
+
+        @Transactional
+        public AuthResponse verifyOtp(String email, String otp) {
+                PasswordResetToken token = tokenRepository.findByEmail(email)
+                                .orElseThrow(() -> new RuntimeException("No active OTP session found for this email"));
+
+                if (token.isExpired()) {
+                        tokenRepository.delete(token); // cleanup
+                        return AuthResponse.builder().success(false).message("OTP has expired").build();
+                }
+
+                if (!token.getOtp().equals(otp)) {
+                        return AuthResponse.builder().success(false).message("Invalid OTP").build();
+                }
+
+                return AuthResponse.builder().success(true).message("OTP verified successfully").build();
+        }
+
+        @Transactional
+        public AuthResponse resetPassword(String email, String otp, String newPassword) {
+                // Verify again just in case bypassing
+                AuthResponse verify = verifyOtp(email, otp);
+                if (!verify.isSuccess()) {
+                        return verify;
+                }
+
+                // Update User
+                User user = userRepository.findByEmail(email)
+                                .orElseThrow(() -> new ResourceNotFoundException("User", "email", email));
+                
+                user.setPassword(passwordEncoder.encode(newPassword));
+                userRepository.save(user);
+
+                // Consume Token
+                tokenRepository.deleteByEmail(email);
+
+                return AuthResponse.builder()
+                                .success(true)
+                                .message("Password reset successfully. You can now log in.")
+                                .build();
         }
 
         public AuthResponse login(LoginRequest request) {

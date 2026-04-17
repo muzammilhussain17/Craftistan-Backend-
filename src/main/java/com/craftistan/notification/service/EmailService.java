@@ -89,6 +89,17 @@ public class EmailService {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
+    // Password Reset Email — triggered on forgot password
+    // ─────────────────────────────────────────────────────────────────────────
+
+    public void sendPasswordResetOtpEmail(String to, String name, String otp) {
+        sendHtmlEmail(to, "Your Password Reset OTP — Craftistan", "password-reset", Map.of(
+                "name", name,
+                "otp", otp
+        ));
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
     // Welcome Email — triggered on registration
     // ─────────────────────────────────────────────────────────────────────────
 
