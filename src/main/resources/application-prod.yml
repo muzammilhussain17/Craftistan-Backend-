@@ -7,9 +7,13 @@ spring:
     username: ${SPRING_DATASOURCE_USERNAME:${DB_USERNAME}}
     password: ${SPRING_DATASOURCE_PASSWORD:${DB_PASSWORD}}
     hikari:
-      connection-timeout: 30000   # 30s — tolerates Neon cold-start wake-up
-      maximum-pool-size: 5        # keep pool small for Railway free plan RAM
+      connection-timeout: 30000    # 30s — tolerates Neon cold-start
+      max-lifetime: 290000         # 290s — must be LESS than Neon's 300s server timeout
+      keepalive-time: 30000        # ping idle connections every 30s — prevents stale connections
+      maximum-pool-size: 5         # keep small for Railway free plan RAM
       minimum-idle: 1
+      validation-timeout: 5000     # fail fast on bad connections
+      connection-test-query: SELECT 1
 
   jpa:
     hibernate:
