@@ -103,6 +103,13 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- Cloudinary (Image Upload) -->
+        <dependency>
+            <groupId>com.cloudinary</groupId>
+            <artifactId>cloudinary-http45</artifactId>
+            <version>1.39.0</version>
+        </dependency>
+
         <!-- HTTP Client for Gemini API -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

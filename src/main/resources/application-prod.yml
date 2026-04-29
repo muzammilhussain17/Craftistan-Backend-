@@ -1,10 +1,15 @@
 # Production Profile
 spring:
-  # PostgreSQL Database
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:craftistan}
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:aziz890}
+    # Use SPRING_DATASOURCE_URL if set (recommended for Neon: include ?sslmode=require)
+    # Otherwise fall back to assembling from individual DB_* vars
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:craftistan}}
+    username: ${SPRING_DATASOURCE_USERNAME:${DB_USERNAME}}
+    password: ${SPRING_DATASOURCE_PASSWORD:${DB_PASSWORD}}
+    hikari:
+      connection-timeout: 30000   # 30s — tolerates Neon cold-start wake-up
+      maximum-pool-size: 5        # keep pool small for Railway free plan RAM
+      minimum-idle: 1
 
   jpa:
     hibernate:
@@ -14,8 +19,20 @@ spring:
   flyway:
     enabled: true
 
+# Application — production sender address
+app:
+  mail:
+    from: ${APP_MAIL_FROM:noreply@craftistan.com}
+
 # Logging
 logging:
   level:
     com.craftistan: INFO
     org.springframework: WARN
+
+# Actuator — disable mail health check until Brevo is configured
+# Without this, /actuator/health hangs for 2+ minutes when SMTP is unreachable
+management:
+  health:
+    mail:
+      enabled: false
