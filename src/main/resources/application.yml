@@ -47,6 +47,9 @@ spring:
           auth: true
           starttls:
             enable: true
+          connectiontimeout: 5000   # fail fast if SMTP unreachable (5s)
+          timeout: 5000             # read timeout (5s)
+          writetimeout: 5000        # write timeout (5s)
 
 # Application Properties
 app:

@@ -38,7 +38,6 @@ public class EmailService {
     // Core send method (async — never blocks a request thread)
     // ─────────────────────────────────────────────────────────────────────────
 
-    @Async
     public void sendHtmlEmail(String to, String subject, String templateName, Map<String, Object> variables) {
         try {
             Context ctx = new Context();
@@ -92,6 +91,7 @@ public class EmailService {
     // Password Reset Email — triggered on forgot password
     // ─────────────────────────────────────────────────────────────────────────
 
+    @Async
     public void sendPasswordResetOtpEmail(String to, String name, String otp) {
         sendHtmlEmail(to, "Your Password Reset OTP — Craftistan", "password-reset", Map.of(
                 "name", name,
@@ -103,6 +103,7 @@ public class EmailService {
     // Welcome Email — triggered on registration
     // ─────────────────────────────────────────────────────────────────────────
 
+    @Async
     public void sendWelcomeEmail(String to, String name) {
         sendHtmlEmail(to, "Welcome to Craftistan 🎉", "welcome", Map.of(
                 "name", name,
@@ -114,6 +115,7 @@ public class EmailService {
     // Order Confirmation — triggered for buyer on order creation
     // ─────────────────────────────────────────────────────────────────────────
 
+    @Async
     public void sendOrderConfirmationEmail(String to, String name, String orderId,
                                            BigDecimal total, String paymentMethod,
                                            List<OrderItemData> items) {
@@ -130,6 +132,7 @@ public class EmailService {
     // Artisan New Order Alert — triggered when buyer places order
     // ─────────────────────────────────────────────────────────────────────────
 
+    @Async
     public void sendArtisanNewOrderEmail(String to, String artisanName, String orderId,
                                          List<OrderItemData> items, BigDecimal total) {
         sendHtmlEmail(to, "🛒 New Order Received — " + orderId, "artisan-new-order", Map.of(
@@ -144,6 +147,7 @@ public class EmailService {
     // Order Status Update — triggered when artisan updates order status
     // ─────────────────────────────────────────────────────────────────────────
 
+    @Async
     public void sendOrderStatusUpdateEmail(String to, String name, String orderId, String status) {
         String subject = switch (status.toUpperCase()) {
             case "PROCESSING" -> "Your Order is Being Prepared — " + orderId;
@@ -162,6 +166,7 @@ public class EmailService {
     // Order Cancellation — triggered for buyer AND artisan
     // ─────────────────────────────────────────────────────────────────────────
 
+    @Async
     public void sendOrderCancelledEmail(String to, String name, String orderId, boolean isArtisan) {
         sendHtmlEmail(to, "Order Cancelled — " + orderId, "order-cancelled", Map.of(
                 "name", name,
@@ -174,12 +179,14 @@ public class EmailService {
     // Artisan Verification — triggered after admin approves or rejects
     // ─────────────────────────────────────────────────────────────────────────
 
+    @Async
     public void sendArtisanVerifiedEmail(String to, String name) {
         sendHtmlEmail(to, "🎉 Congratulations! Your Artisan Account is Verified", "artisan-verified", Map.of(
                 "name", name
         ));
     }
 
+    @Async
     public void sendArtisanRejectedEmail(String to, String name, String notes) {
         sendHtmlEmail(to, "Artisan Application Update", "artisan-rejected", Map.of(
                 "name", name,
@@ -191,6 +198,7 @@ public class EmailService {
     // New Review — triggered for artisan when a buyer reviews their product
     // ─────────────────────────────────────────────────────────────────────────
 
+    @Async
     public void sendNewReviewEmail(String to, String artisanName, String productName,
                                    String reviewerName, int rating, String comment) {
         sendHtmlEmail(to, "⭐ New Review on " + productName, "new-review", Map.of(
@@ -206,6 +214,7 @@ public class EmailService {
     // Report Resolved — triggered when admin updates a report status
     // ─────────────────────────────────────────────────────────────────────────
 
+    @Async
     public void sendReportResolvedEmail(String to, String name, String status, String resolutionNote) {
         sendHtmlEmail(to, "Your Report Has Been " + status, "report-resolved", Map.of(
                 "name", name,
