@@ -28,7 +28,7 @@ spring:
 
 app:
   mail:
-    from: ${APP_MAIL_FROM:noreply@craftistan.com}
+    from: ${APP_MAIL_FROM:muzammilhussain0a0@gmail.com}
 
 logging:
   level:
