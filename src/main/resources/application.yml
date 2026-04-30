@@ -68,6 +68,8 @@ app:
     folder: craftistan
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000}
+  google:
+    client-id: ${GOOGLE_CLIENT_ID:}   # Set in Railway / .env
   gemini:
     api-key: ${GEMINI_API_KEY:}  # Set via environment variable
     model: gemini-2.5-flash

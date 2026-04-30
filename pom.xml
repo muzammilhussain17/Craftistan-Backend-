@@ -110,6 +110,13 @@
             <version>1.39.0</version>
         </dependency>
 
+        <!-- Google API Client (ID Token verification for Google Sign-In) -->
+        <dependency>
+            <groupId>com.google.api-client</groupId>
+            <artifactId>google-api-client</artifactId>
+            <version>2.2.0</version>
+        </dependency>
+
         <!-- HTTP Client for Gemini API -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

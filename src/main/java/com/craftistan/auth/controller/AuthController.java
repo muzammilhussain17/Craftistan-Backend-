@@ -1,6 +1,7 @@
 package com.craftistan.auth.controller;
 
 import com.craftistan.auth.dto.AuthResponse;
+import com.craftistan.auth.dto.GoogleAuthRequest;
 import com.craftistan.auth.dto.LoginRequest;
 import com.craftistan.auth.dto.RegisterRequest;
 import com.craftistan.auth.service.AuthService;
@@ -76,5 +77,18 @@ public class AuthController {
     public ResponseEntity<ApiResponse<AuthResponse>> resetPassword(@RequestBody Map<String, String> request) {
         return ResponseEntity.ok(ApiResponse.success(
                 authService.resetPassword(request.get("email"), request.get("otp"), request.get("newPassword"))));
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Google Sign-In
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @PostMapping("/google")
+    @Operation(summary = "Sign in / sign up with a Google ID token")
+    public ResponseEntity<AuthResponse> googleAuth(@RequestBody GoogleAuthRequest request) {
+        AuthResponse response = authService.googleAuth(request);
+        return response.isSuccess()
+                ? ResponseEntity.ok(response)
+                : ResponseEntity.badRequest().body(response);
     }
 }

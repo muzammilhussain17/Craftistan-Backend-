@@ -1,6 +1,7 @@
 package com.craftistan.auth.service;
 
 import com.craftistan.auth.dto.AuthResponse;
+import com.craftistan.auth.dto.GoogleAuthRequest;
 import com.craftistan.auth.dto.LoginRequest;
 import com.craftistan.auth.dto.RegisterRequest;
 import com.craftistan.config.JwtUtils;
@@ -8,13 +9,20 @@ import com.craftistan.notification.service.EmailService;
 import com.craftistan.user.entity.Role;
 import com.craftistan.user.entity.User;
 import com.craftistan.user.repository.UserRepository;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.HashMap;
 import com.craftistan.user.repository.PasswordResetTokenRepository;
 import com.craftistan.user.entity.PasswordResetToken;
@@ -24,10 +32,15 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
+
+        @Value("${app.google.client-id:}")
+        private String googleClientId;
 
         private final UserRepository userRepository;
         private final PasswordResetTokenRepository tokenRepository;
@@ -210,5 +223,82 @@ public class AuthService {
                                                 .avatar(user.getAvatar())
                                                 .build())
                                 .build();
+        }
+
+        // ─────────────────────────────────────────────────────────────────────────────
+        // Google Sign-In — verify ID token and return JWT
+        // ─────────────────────────────────────────────────────────────────────────────
+
+        @Transactional
+        public AuthResponse googleAuth(GoogleAuthRequest request) {
+                if (googleClientId == null || googleClientId.isBlank()) {
+                        return AuthResponse.builder()
+                                        .success(false)
+                                        .message("Google Sign-In is not configured on this server.")
+                                        .build();
+                }
+
+                try {
+                        // 1. Verify the Google ID token against our Client ID
+                        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier
+                                        .Builder(new NetHttpTransport(), GsonFactory.getDefaultInstance())
+                                        .setAudience(Collections.singletonList(googleClientId))
+                                        .build();
+
+                        GoogleIdToken idToken = verifier.verify(request.getCredential());
+                        if (idToken == null) {
+                                return AuthResponse.builder()
+                                                .success(false)
+                                                .message("Invalid or expired Google token. Please try again.")
+                                                .build();
+                        }
+
+                        // 2. Extract user info from the verified token
+                        GoogleIdToken.Payload payload = idToken.getPayload();
+                        String email   = payload.getEmail();
+                        String name    = (String) payload.get("name");
+                        String picture = (String) payload.get("picture");
+
+                        // 3. Find existing user or create a new Google account
+                        User user = userRepository.findByEmail(email).orElseGet(() -> {
+                                User newUser = User.builder()
+                                                .name(name != null ? name : email)
+                                                .email(email)
+                                                // Random password — Google users authenticate via token only
+                                                .password(passwordEncoder.encode(UUID.randomUUID().toString()))
+                                                .role(request.getRole() != null ? request.getRole() : Role.BUYER)
+                                                .avatar(picture)
+                                                .build();
+                                User saved = userRepository.save(newUser);
+                                // Send welcome email in background
+                                emailService.sendWelcomeEmail(email, saved.getName());
+                                return saved;
+                        });
+
+                        // 4. Issue Craftistan JWT
+                        Map<String, Object> claims = new HashMap<>();
+                        claims.put("role", user.getRole().name());
+                        claims.put("name", user.getName());
+                        String token = jwtUtils.generateToken(user, claims);
+
+                        return AuthResponse.builder()
+                                        .success(true)
+                                        .accessToken(token)
+                                        .user(AuthResponse.UserDto.builder()
+                                                        .id(user.getId())
+                                                        .name(user.getName())
+                                                        .email(user.getEmail())
+                                                        .role(user.getRole())
+                                                        .avatar(user.getAvatar())
+                                                        .build())
+                                        .build();
+
+                } catch (Exception e) {
+                        log.error("Google authentication failed", e);
+                        return AuthResponse.builder()
+                                        .success(false)
+                                        .message("Google authentication failed. Please try again.")
+                                        .build();
+                }
         }
 }
