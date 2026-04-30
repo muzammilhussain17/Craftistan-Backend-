@@ -38,7 +38,7 @@ public class EmailService {
     // Core send method (async — never blocks a request thread)
     // ─────────────────────────────────────────────────────────────────────────
 
-    public void sendHtmlEmail(String to, String subject, String templateName, Map<String, Object> variables) {
+    private void sendHtmlEmail(String to, String subject, String templateName, Map<String, Object> variables) {
         try {
             Context ctx = new Context();
             ctx.setVariables(variables);
