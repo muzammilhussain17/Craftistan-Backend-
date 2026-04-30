@@ -2,7 +2,6 @@ package com.craftistan.chat.service;
 
 import com.craftistan.chat.dto.ChatRequest;
 import com.craftistan.chat.dto.ChatResponse;
-import com.craftistan.product.dto.ProductDto;
 import com.craftistan.product.service.ProductService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
