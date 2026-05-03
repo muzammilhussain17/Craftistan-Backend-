@@ -30,6 +30,7 @@ public class ProductService {
     // PUBLIC GET methods - APPROVED products only
     // ============================================
 
+    @Transactional(readOnly = true)
     public Page<ProductDto> getAllProducts(Pageable pageable, String language) {
         return productRepository.findByIsActiveTrueAndApprovalStatus(ApprovalStatus.APPROVED, pageable)
                 .map(p -> toDto(p, language));
@@ -39,6 +40,7 @@ public class ProductService {
         return getAllProducts(pageable, null);
     }
 
+    @Transactional(readOnly = true)
     public Page<ProductDto> getProductsByCategory(String category, Pageable pageable, String language) {
         return productRepository.findByCategoryAndIsActiveTrueAndApprovalStatus(
                 category, ApprovalStatus.APPROVED, pageable)
@@ -49,6 +51,7 @@ public class ProductService {
         return getProductsByCategory(category, pageable, null);
     }
 
+    @Transactional(readOnly = true)
     public Page<ProductDto> searchProducts(String query, Pageable pageable, String language) {
         return productRepository.searchProducts(query, pageable)
                 .map(p -> toDto(p, language));
@@ -58,6 +61,7 @@ public class ProductService {
         return searchProducts(query, pageable, null);
     }
 
+    @Transactional(readOnly = true)
     public Page<ProductDto> filterProducts(
             String category,
             String style,
@@ -78,6 +82,7 @@ public class ProductService {
         return filterProducts(category, style, minPrice, maxPrice, pageable, null);
     }
 
+    @Transactional(readOnly = true)
     public ProductDto getProductById(Long id, String language) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id));
@@ -88,6 +93,7 @@ public class ProductService {
         return getProductById(id, null);
     }
 
+    @Transactional(readOnly = true)
     public Page<ProductDto> getArtisanProducts(String artisanId, Pageable pageable, String language) {
         return productRepository.findByArtisanIdAndIsActiveTrue(artisanId, pageable)
                 .map(p -> toDto(p, language));
@@ -112,8 +118,10 @@ public class ProductService {
                 .description(request.getDescription())
                 .category(request.getCategory())
                 .style(request.getStyle())
-                .images(request.getImages())
-                .stock(request.getStock())
+                .isActive(true)
+                .approvalStatus(ApprovalStatus.PENDING)
+                .images(request.getImages() != null ? new ArrayList<>(request.getImages()) : new ArrayList<>())
+                .stock(request.getStock() != null ? request.getStock() : 0)
                 .artisanId(artisan.getId())
                 .artisanName(artisan.getName())
                 .originalLanguage("en") // Default, could be from request
@@ -154,7 +162,7 @@ public class ProductService {
         product.setCategory(request.getCategory());
         product.setStyle(request.getStyle());
         if (request.getImages() != null) {
-            product.setImages(request.getImages());
+            product.setImages(new ArrayList<>(request.getImages()));
         }
         product.setStock(request.getStock());
 
@@ -231,7 +239,7 @@ public class ProductService {
                 .category(product.getCategory())
                 .style(product.getStyle())
                 .image(product.getImage())
-                .images(product.getImages())
+                .images(product.getImages() != null ? new ArrayList<>(product.getImages()) : new ArrayList<>())
                 .stock(product.getStock())
                 .artisanId(product.getArtisanId())
                 .artisanName(product.getArtisanName())

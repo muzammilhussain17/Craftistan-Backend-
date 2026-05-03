@@ -35,6 +35,7 @@ public class Product extends BaseEntity {
     @ElementCollection
     @CollectionTable(name = "product_images", joinColumns = @JoinColumn(name = "product_id"))
     @Column(name = "image_url", columnDefinition = "TEXT")
+    @org.hibernate.annotations.BatchSize(size = 20)
     @Builder.Default
     private List<String> images = new ArrayList<>();
 
